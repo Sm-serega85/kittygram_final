@@ -12,19 +12,19 @@ services:
     volumes:
       - pg_data:/var/lib/postgres/data
   backend:
-    image: kirionnight/kittygram_backend
+    image: smserega85/kittygram_backend
     env_file: .env
     volumes:
       - static:/static/
       - media:/app/media/
   frontend:
     env_file: .env
-    image: kirionnight/kittygram_frontend
+    image: smserega85/kittygram_frontend
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
   gateway:
-    image: kirionnight/kittygram_gateway
+    image: smserega85/kittygram_gateway
     env_file: .env
     ports:
       - 9000:80
