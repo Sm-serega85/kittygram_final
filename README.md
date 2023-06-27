@@ -1,86 +1,145 @@
-Описание проекта
-Kittygram - сервис для любителей котиков и кошечек, а также любой кошачей милоты.
+### Описание проекта 
+Kittygram - сервис для любителей котиков и кошечек.
 
 Возможности проекта :
 
-Редактировать, добавлять, удалять, просматривать котов;
-Добавлять новые / присваивать существующие достижения;
-Просматривать чужих котов и их достижения;
+- Редактировать, добавлять, удалять, просматривать котов;
+- Добавлять новые / присваивать существующие достижения; 
+- Просматривать чужих котов и их достижения;
 
-Установка
+### Демонстрация сайта
+
+Проект Kittygram находиться по адресу: https://1one1one1.hopto.org/
+
+Апи по адресу https://1one1one1.hopto.org/api/
+
+## Установка 
+
 1. Клонируйте репозиторий:
 
-git clone ...
-cd kittygram
+    ```bash
+    git clone ...
+    ```
+    ```bash
+    cd kittygram
+    ```
 2. Создайте файл .env и заполните его своими данными:
 
+    ```bash
+    POSTGRES_DB= [имя_базы_данных]
+    POSTGRES_USER=[имя_пользователя_базы]
+    POSTGRES_PASSWORD=[пароль_к_базе]
+    DB_HOST=[имя_хоста]
+    DB_PORT=[порт_соединения_к_базе]
+    ```
 
-POSTGRES_DB= [имя_базы_данных]
-POSTGRES_USER=[имя_пользователя_базы]
-POSTGRES_PASSWORD=[пароль_к_базе]
-DB_HOST=[имя_хоста]
-DB_PORT=[порт_соединения_к_базе]
-Создание Docker-образов
+### Создание Docker-образов
 
-Замените username на ваш логин на DockerHub:
+1.  Замените username на ваш логин на DockerHub:
 
-cd frontend
-docker build -t username/kittygram_frontend .
-cd ../backend
-docker build -t username/kittygram_backend .
-cd ../nginx
-docker build -t username/kittygram_gateway . 
-Загрузите образы на DockerHub:
+    ```bash
+    cd frontend
+    docker build -t username/kittygram_frontend .
+    cd ../backend
+    docker build -t username/kittygram_backend .
+    cd ../nginx
+    docker build -t username/kittygram_gateway . 
+    ```
 
-docker push username/kittygram_frontend
-docker push username/kittygram_backend
-docker push username/kittygram_gateway
-Деплой на сервере
-Подключитесь к удаленному серверу
+2. Загрузите образы на DockerHub:
 
-ssh -i путь_до_файла_с_SSH_ключом/название_файла_с_SSH_ключом имя_пользователя@ip_адрес_сервера 
-Создайте на сервере директорию kittygram через терминал
+    ```bash
+    docker push username/kittygram_frontend
+    docker push username/kittygram_backend
+    docker push username/kittygram_gateway
+    ```
 
-mkdir kittygram
-Установка docker compose на сервер:
+### Деплой на сервере
 
-sudo apt update
-sudo apt install curl
-curl -fSL https://get.docker.com -o get-docker.sh
-sudo sh ./get-docker.sh
-sudo apt-get install docker-compose-plugin
-В директорию kittygram/ скопируйте файлы docker-compose.production.yml и .env:
+1. Подключитесь к удаленному серверу
 
-scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/home/username/kittygram/docker-compose.production.yml
-Запустите docker compose в режиме демона:
+    ```bash
+    ssh -i путь_до_файла_с_SSH_ключом/название_файла_с_SSH_ключом имя_пользователя@ip_адрес_сервера 
+    ```
 
-sudo docker compose -f docker-compose.production.yml up -d
-Выполните миграции, соберите статические файлы бэкенда и скопируйте их в /backend_static/static/:
+2. Создайте на сервере директорию kittygram через терминал
 
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
-На сервере в редакторе nano откройте конфиг Nginx:
+    ```bash
+    mkdir kittygram
+    ```
 
-nano /etc/nginx/sites-enabled/default
-Измените настройки location в секции server:
+3. Установка docker compose на сервер:
 
-location / {
-    proxy_set_header Host $http_host;
-    proxy_pass http://127.0.0.1:8000;
-}
-Проверьте работоспособность конфига и перезапустите Nginx:
+    ```bash
+    sudo apt update
+    sudo apt install curl
+    curl -fSL https://get.docker.com -o get-docker.sh
+    sudo sh ./get-docker.sh
+    sudo apt-get install docker-compose-plugin
+    ```
 
-sudo nginx -t 
-sudo service nginx reload
-Настройка CI/CD
-Файл workflow уже написан. Он находится в директории
+4. В директорию kittygram/ скопируйте файлы docker-compose.production.yml и .env:
 
-kittygram/.github/workflows/main.yml
-Для адаптации его на своем сервере добавьте секреты в GitHub Actions:
+    ```bash
+    scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/home/username/kittygram/docker-compose.production.yml
+    ```
 
-SECRET_KEY # стандартный ключ, который создается при старте проекта
+5. Запустите docker compose в режиме демона:
 
-DOCKER_USERNAME # имя пользователя в DockerHub DOCKER_PASSWORD # пароль пользователя в DockerHub HOST # ip_address сервера USER # имя пользователя SSH_KEY # приватный ssh-ключ (cat ~/.ssh/id_rsa) PASSPHRASE # кодовая фраза (пароль) для ssh-ключа
+    ```bash
+    sudo docker compose -f docker-compose.production.yml up -d
+    ```
 
-TELEGRAM_TO # id телеграм-аккаунта (можно узнать у @userinfobot, команда /start) TELEGRAM_TOKEN # токен бота (получить токен можно у @BotFather, /token, имя бота) ```
+6. Выполните миграции, соберите статические файлы бэкенда и скопируйте их в /backend_static/static/:
+
+    ```bash
+    sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+    sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+    sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+    ```
+
+7. На сервере в редакторе nano откройте конфиг Nginx:
+
+    ```bash
+    nano /etc/nginx/sites-enabled/default
+    ```
+
+8. Измените настройки location в секции server:
+
+    ```bash
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://127.0.0.1:8000;
+    }
+    ```
+
+9. Проверьте работоспособность конфига и перезапустите Nginx:
+
+    ```bash
+    sudo nginx -t 
+    sudo service nginx reload
+    ```
+
+### Настройка CI/CD
+
+1. Файл workflow уже написан. Он находится в директории
+
+    ```bash
+    kittygram/.github/workflows/main.yml
+    ```
+
+2. Для адаптации его на своем сервере добавьте секреты в GitHub Actions:
+
+    ```bash
+SECRET_KEY                     # стандартный ключ, который создается при старте проекта
+
+DOCKER_USERNAME                # имя пользователя в DockerHub
+DOCKER_PASSWORD                # пароль пользователя в DockerHub
+HOST                           # ip_address сервера
+USER                           # имя пользователя
+SSH_KEY                        # приватный ssh-ключ (cat ~/.ssh/id_rsa)
+PASSPHRASE                     # кодовая фраза (пароль) для ssh-ключа
+
+TELEGRAM_TO                    # id телеграм-аккаунта (можно узнать у @userinfobot, команда /start)
+TELEGRAM_TOKEN                 # токен бота (получить токен можно у @BotFather, /token, имя бота)
+    ```
